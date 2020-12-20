@@ -1,0 +1,89 @@
+<form id="loginForm">
+    <label>Logg Inn</label><br><br>
+     <p hidden id="wrongP">Feil brukernavn eller passord</p>
+    <input id="username" placeholder="brukernavn"><br>
+    <input type="password" placeholder="passord" id="password"><br>
+    <label>Husk Passord?</label><input type="checkbox" id="rememberMe"><br>
+    <button type="submit">Logg Inn</button><br>
+    <a href="/registrer.html">Har du ikke bruker registerer her!</a>
+</form>
+<style>
+    #loginForm{
+        text-align: center;
+        position: absolute;
+        left:50%;
+        top: 50%;
+        margin-left:-133.5px;
+        margin-top:-179px;
+        background-color: lightgrey;
+        padding-right: 50px;
+        padding-left: 50px;
+        padding-top: 100px;
+        padding-bottom:100px;
+        border-color:grey;
+        border-width: 1px;
+        border-style: solid;
+    }
+    #loginForm input{
+        margin-top: 10px;
+    }
+    #loginForm button{
+        margin-top: 10px;
+    }
+    #wrongP{
+        color:red;
+    }
+    a{
+        text-decoration: none;
+    }
+</style>
+<script src="socket.io/socket.io.js"></script>
+<script>
+    var socket = io()
+    document.getElementById("loginForm").addEventListener("submit", (e) => {
+        e.preventDefault()
+        console.log(document.getElementById("username").value)
+        socket.emit("login", document.getElementById("username").value, document.getElementById("password").value)
+    })
+    socket.on("passwordWrong", () => {
+        document.getElementById("wrongP").hidden = false
+    })
+    socket.on("passwordCorrect", (username, key) => {
+        if(document.getElementById("rememberMe").checked){
+            localStorage.setItem("username", username)
+            localStorage.setItem("key", key)
+        }
+        else{
+            sessionStorage.setItem("username", username)
+            sessionStorage.setItem("key", key)
+        }
+        var searchParams = window.location.search
+        var urlParams = new URLSearchParams(searchParams)
+        if(urlParams.get("redirect")){
+            if(urlParams.get("redirect") == "newAdress"){
+                newAdress()
+            }
+            else if(urlParams.get("redirect")){
+                window.location.href=urlParams.get("redirect")
+            }
+            else{
+                window.location.href="/"
+            }
+        }
+        else{
+            window.location.href="index.html"
+        }
+    })
+    socket.on("allowed", () => {
+        window.location.href="index.html"
+    });
+    (function(){
+        if(localStorage.getItem("username") && localStorage.getItem("key")){
+            socket.emit("check", localStorage.getItem("username"), localStorage.getItem("key"))
+        }
+        else if(sessionStorage.getItem("username") && sessionStorage.getItem("key")){
+            socket.emit("check", sessionStorage.getItem("username"), sessionStorage.getItem("key"))
+        }
+    })()
+</script>
+<script src="js/public.js"></script>

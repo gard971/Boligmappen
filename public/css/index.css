@@ -1,0 +1,15 @@
+.adressWrapper:hover{
+    background-color: grey;
+    cursor: pointer;
+
+}
+body{
+    text-align: center;
+}
+#ul{
+    list-style: none;
+}
+
+::placeholder{
+    text-align: center;
+}

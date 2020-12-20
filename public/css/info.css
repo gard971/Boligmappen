@@ -1,0 +1,39 @@
+#uploadForm{
+    position: absolute;
+    text-align: center;
+    top:50%;
+    left:50%;
+    margin-left:-113px;
+    margin-top:-80px;
+    background-color:grey;
+    padding: 50px;
+    border-radius: 30%;
+    overflow: hidden;
+    max-width: 227px;
+}
+#uploadLabel:hover{
+    cursor: pointer;
+    color:blue;
+}
+#close{
+    width: 9%;
+    position: absolute;
+    bottom: 70%;
+    left:10%;
+}
+#close:hover{
+    cursor: pointer;
+}
+body{
+    text-align: center;
+}
+.downlodable:hover{
+    cursor: pointer;
+    color: blue;
+}
+.downlodable{
+    font-size: 40px;
+}
+.downloadarrow{
+    width:2%;
+}
