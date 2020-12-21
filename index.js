@@ -83,6 +83,7 @@ app.get("/download", (req, res) => {
 app.use(express.static(path.join(__dirname + "/public")))
 
 io.on("connection", socket => {
+    console.log("connection")
     socket.on("getAdresses", () => {
         socket.emit("adresses", jsonRead("data/adresses.json"))
     })

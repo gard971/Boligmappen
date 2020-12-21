@@ -12,9 +12,13 @@
     "path": "^0.12.7",
     "socket.io": "^3.0.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "nodemon": "^2.0.6"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index",
+    "dev": "nodemon index --ignore data/"
   },
   "author": "",
   "license": "ISC"
