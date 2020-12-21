@@ -6,6 +6,7 @@ const path = require("path")
 const io = require("socket.io")(http)
 const formidable = require("formidable")
 const bcrypt = require("bcrypt")
+const { cpuUsage } = require("process")
 var saltRounds = 10;
 var approvedKeys = []
 
@@ -203,10 +204,60 @@ io.on("connection", socket => {
                     })
                 }
             })
+            if(!exitsts){
+                socket.emit("err", "denne adressen finnes ikke")
+                socket.emit("redir", "/")
+            }
             if(exitsts && !allowed){
                 socket.emit("err", "Du har ikke tilgang til denne adressen. Be eieren gi deg tilgang først")
                 socket.emit("redir", "/")
             }
+        }
+        else{
+            socket.emit("redir", `login.html?redirect=info.html?id=${adressID}`)
+        }
+    })
+    socket.on("AddUser", (username, key, adressID, usernameToAdd, time) => {
+        var adressFound = false
+        var completed = false
+        var hasAccess
+        var usernameFromDatabase = false
+        var loggedIn = check(username, key)
+        if(loggedIn){
+            var adresses = jsonRead("data/adresses.json")
+            adresses.forEach(adress => {
+                if(adress.id == adressID){
+                    adressFound = true
+                    adress.userAccess.forEach(access => {
+                        if(access.username == username && access.isOwner){
+                            var users = jsonRead("data/users.json")
+                            users.forEach(user => {
+                                if(user.username.toLowerCase() == usernameToAdd.toLowerCase()){
+                                    usernameFromDatabase = user.username
+                                }
+                            })
+                            if(!usernameFromDatabase){
+                                socket.emit("err", "fant ikke en bruker ved dette brukernavnet")
+                                return false;
+                            }
+                            else{
+                            completed = true
+                            var newObject = {
+                               "username":usernameFromDatabase,
+                                "isOwner":false
+                            }
+                            adress.userAccess.push(newObject)
+                            jsonWrite(adresses, "data/adresses.json")
+                        }
+                        }
+                    })
+                }
+            })
+            if(!completed){
+                socket.emit("err", "Du har ikke tilgang til å gjøre dette")
+            }
+        }else{
+            socket.emit("redir", `login.html?redir=info.html?id=${adressID}`)
         }
     })
 })

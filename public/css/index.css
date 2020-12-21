@@ -15,4 +15,9 @@ body{
 }
 #search{
     margin-top:50px;
+    border:none;
+    border-bottom: 1px solid grey;
+}
+#search:focus{
+    outline: none;
 }

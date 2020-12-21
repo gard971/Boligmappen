@@ -4,6 +4,16 @@
     <a id="a2" href="login.html">Logg inn</a>
     <a id="a3" href="nyadresse.html">Registrer ny adresse </a>
 </ul>
+<form class="NewMemberForm" id="newMemberForm">
+<input type="text" placeholder="Legg til nye medlem!" id="memberToAdd" required><br>
+     <select required>
+         <option disabled selected>Tid</option>
+         <option value="1">1min</option>
+         <option value="10">10min</option>
+         <option>Til jeg fjerner</option>
+     </select><br>
+     <input type="submit" value="Legg til!">
+</form>
 <container id="infoContainer"></container>
 <button id="addButton" onclick="windowHandle('uploadForm', true); windowHandle('addButton', false)">+</button>
 <div id="downloadsContainer">

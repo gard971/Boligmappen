@@ -32,8 +32,44 @@ body{
     color: blue;
 }
 .downlodable{
+    position: relative;
     font-size: 40px;
+    width:30%;
+    left: 50%;
+    transform: translateX(-50%);
 }
 .downloadarrow{
     width:2%;
+}
+.newMemberForm{
+    position: absolute;
+    left:30px;
+    top:50%;
+    margin-top: -43.5px;
+}
+.newMemberForm input[type=text]{
+    border:none;
+    border-bottom:1px solid black;
+}
+.newMemberForm input[type=text]:focus{
+    outline: none;
+}
+.newMemberForm input[type=submit], .newMemberForm select{
+    margin-top: 10px;
+}
+.newMemberForm input[type=submit]{
+    border: none;
+    background:orange;
+    border-radius: 12px;
+    width:100px;
+    height:30px;
+}
+.newMemberForm input[type=submit]:focus{
+    outline:none;
+}
+.newMemberForm input[type=submit]:hover{
+    cursor: pointer;
+}
+.newMemberForm select{
+    text-align: center;
 }

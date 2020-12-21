@@ -1,8 +1,9 @@
 var socket = io()
 var ID;
+var urlParams;
 (function(){
     var queryString = window.location.search
-    var urlParams = new URLSearchParams(queryString)
+    urlParams = new URLSearchParams(queryString)
     if(!urlParams.get("id")){
         alert("noe gikk galt. Sender deg tilbake til hovedsiden")
     }
@@ -23,7 +24,9 @@ function windowHandle(ElementID, visible){
     document.getElementById(ElementID).hidden = !visible
 }
 socket.on("adress", (adress, isOwner) => {
-        console.log(isOwner)
+            if(!isOwner){
+                document.getElementById("newMemberForm").hidden = true
+            }
             document.getElementById("uploadForm").action = `/upload?id=${adress.id}`
             console.log(document.getElementById("uploadForm").action)
             var div = document.getElementById("infoContainer")
@@ -57,4 +60,22 @@ socket.on("adress", (adress, isOwner) => {
 document.getElementById("fileupload").addEventListener("change", e => {
     var htmlString = ""
     document.getElementById("uploadlabel").innerHTML = `fil ${e.srcElement.files[0].name} lastet opp`
+})
+document.getElementById("newMemberForm").addEventListener("submit", e => {
+    e.preventDefault();
+    var username
+    var key
+    if(localStorage.getItem("username") && localStorage.getItem("key")){
+        username = localStorage.getItem("username") 
+        key = localStorage.getItem("key") 
+    }
+    else if(sessionStorage.getItem("username") && sessionStorage.getItem("key")){
+        username = sessionStorage.getItem("username") 
+        key = sessionStorage.getItem("key") 
+    }
+    else{
+        window.location.href=`login.html?redirect=info.html?id=${urlParams.get("id")}`
+        return false;
+    }
+    socket.emit("AddUser", username, key, urlParams.get("id"), document.getElementById("memberToAdd").value)
 })
