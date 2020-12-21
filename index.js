@@ -243,3 +243,26 @@ function check(username, key){
         }
         return false;
 }
+(function(){
+    if(!fs.existsSync("data/")){
+        fs.mkdirSync("data/")
+        fs.writeFileSync("data/adresses.json", "[]")
+        fs.writeFileSync("data/files.json", "[]")
+        fs.writeFileSync("data/genInfo.json", '{"nextFileID":0,"nextAdressID":0}')
+        fs.writeFileSync("data/users.json", "[]")
+    }
+    else{
+        if(!fs.existsSync("data/adresses.json")){
+            fs.writeFileSync("data/adresses.json", "[]")
+        }
+        if(!fs.existsSync("data/files.json")){
+            fs.writeFileSync("data/files.json", "[]")
+        }
+        if(!fs.existsSync("data/genInfo.json")){
+            fs.writeFileSync("data/genInfo.json", '{"nextFileID":0,"nextAdressID":0}')
+        }
+        if(!fs.existsSync("data/users.json")){
+            fs.writeFileSync("data/users.json", "[]")
+        }
+    }
+})()
