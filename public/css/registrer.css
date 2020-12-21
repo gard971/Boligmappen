@@ -1,0 +1,28 @@
+#registrerForm {
+    text-align: center;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-left: -133.5px;
+    margin-top: -179px;
+    background-color: lightgrey;
+    padding-right: 50px;
+    padding-left: 50px;
+    padding-top: 100px;
+    padding-bottom: 100px;
+    border-color: grey;
+    border-width: 1px;
+    border-style: solid;
+}
+
+#registrerForm input {
+    margin-top: 10px;
+}
+
+#registrerForm button {
+    margin-top: 10px;
+}
+
+#wrongP {
+    color: red;
+}
