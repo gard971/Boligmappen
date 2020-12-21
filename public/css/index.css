@@ -13,3 +13,6 @@ body{
 ::placeholder{
     text-align: center;
 }
+#search{
+    margin-top:50px;
+}

@@ -1,0 +1,82 @@
+#thisPage{
+    color:darkgrey;
+}
+#thisPage:hover{
+    border-top: 5px solid #333;
+    border-bottom:5px solid #333;
+    box-sizing: border-box;
+    border-left: 0px;
+    border-right:0px;
+    background-color: transparent;
+    cursor: default;
+}
+.navigation{
+    width: 100%;
+    overflow: auto;
+    background-color: grey;
+    color: white;
+}
+
+.navigation ul{
+    list-style: none;
+    margin:0;
+    padding: 0;
+}
+ul{
+    padding: 0;
+}
+.navigation a{
+    float: left;
+    width: 33.3%;
+    text-align: center;
+    color: white;
+    text-decoration: none;
+    font-size: 18px;
+    font-family: arial;
+    box-sizing: border-box;
+    border-left: 0px solid #333;
+    padding-top:10px; 
+    padding-bottom:11px;
+    border-top: 5px solid #333;
+    border-bottom:5px solid #333;
+}
+
+.navigation a:hover{
+    background-color: #333;
+    color: coral;
+}
+
+.navigation a:active{
+    background-color: darkgreen;
+}
+.navigation{
+    width: 100%;
+
+}
+.navigation ul{
+    list-style-type: none; 
+    margin: 0;
+    padding: 0;
+
+}
+
+.navigation li{
+    display: inline;
+}
+.navigation a:hover{
+    border: 5px solid;
+}
+.navigation{
+    width: 100%;
+    overflow: auto;
+}
+
+.navigation ul{
+    list-style: none;
+    margin:0;
+    padding: 0;
+}
+
+.navigation    li{
+    display:inline;
+}

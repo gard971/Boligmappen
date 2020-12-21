@@ -15,7 +15,6 @@ app.post("/upload", (req, res) => {
     } else {
         var formData = new formidable.IncomingForm()
         formData.parse(req, (err, fields, files) => {
-            console.log(files.file)
             var extension = files.file.name.substr(files.file.name.lastIndexOf("."))
             var newPath = `data/${req.query.id}/` + fields.filename.split(" ").join("-") + extension
             if (fs.existsSync(newPath)) {
@@ -33,8 +32,6 @@ app.post("/upload", (req, res) => {
                         res.redirect(`info.html?id=${req.query.id}`)
                         var adresses = jsonRead("data/adresses.json")
                         var geninfo = jsonRead("data/genInfo.json")
-                        console.log(jsonRead("data/genInfo.json"))
-                        console.log(geninfo.nextFileID)
                         adresses.forEach(adress => {
                             if (adress.id == req.query.id) {
                                 var newObject = {
@@ -83,7 +80,6 @@ app.get("/download", (req, res) => {
 app.use(express.static(path.join(__dirname + "/public")))
 
 io.on("connection", socket => {
-    console.log("connection")
     socket.on("getAdresses", () => {
         socket.emit("adresses", jsonRead("data/adresses.json"))
     })
@@ -166,12 +162,10 @@ io.on("connection", socket => {
                         }
                         var found = false
                         adresses.forEach(JSONadress => {
-                            console.log(JSONadress.adress+" "+adress)
                             if(JSONadress.adress == adress){
                                 found = true
                             }
                         })
-                        console.log(found)
                         if(!found){
                             genInfo.nextAdressID++
                             jsonWrite(genInfo, "data/genInfo.json")
@@ -195,7 +189,6 @@ io.on("connection", socket => {
     socket.on("getAdress", (username, key, adressID) => {
         var exitsts = false
         var allowed = false
-        console.log(`${username} ${key} ${adressID}`)
         var userCheck = check(username, key)
         if(userCheck){
             var adresses = jsonRead("data/adresses.json")
@@ -243,6 +236,7 @@ function check(username, key){
         }
         return false;
 }
+//generates data files if non existant
 (function(){
     if(!fs.existsSync("data/")){
         fs.mkdirSync("data/")
