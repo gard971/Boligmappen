@@ -6,12 +6,11 @@
 </ul>
 <form class="NewMemberForm" id="newMemberForm">
 <input type="text" placeholder="Legg til nye medlem!" id="memberToAdd" required><br>
-     <select required>
-         <option disabled selected>Tid</option>
-         <option value="1">1min</option>
-         <option value="10">10min</option>
-         <option>Til jeg fjerner</option>
-     </select><br>
+    <label>Bruk Tidsbegrensning</label>
+     <input id="timelimitCheck" onclick="timelimit(this.checked)" type="checkbox"><br>
+     <container id="timeCont" hidden>
+     <input type="number" placeholder="Tid i minutter" id="timeInput"><br> 
+    </container>
      <input type="submit" value="Legg til!">
 </form>
 <container id="infoContainer"></container>

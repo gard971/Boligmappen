@@ -77,5 +77,15 @@ document.getElementById("newMemberForm").addEventListener("submit", e => {
         window.location.href=`login.html?redirect=info.html?id=${urlParams.get("id")}`
         return false;
     }
-    socket.emit("AddUser", username, key, urlParams.get("id"), document.getElementById("memberToAdd").value)
+    if(document.getElementById("timelimitCheck").checked){
+        var array = [0, document.getElementById("timeInput").value]
+        socket.emit("AddUser", username, key, urlParams.get("id"), document.getElementById("memberToAdd").value, array)
+    }
+    else{
+        socket.emit("AddUser", username, key, urlParams.get("id"), document.getElementById("memberToAdd").value)
+    }
 })
+function timelimit(checked){
+    document.getElementById("timeCont").hidden =! checked
+    document.getElementById("timeInput").required = checked
+}

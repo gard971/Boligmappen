@@ -6,7 +6,7 @@ const path = require("path")
 const io = require("socket.io")(http)
 const formidable = require("formidable")
 const bcrypt = require("bcrypt")
-const { cpuUsage } = require("process")
+const schedule = require("node-schedule")
 var saltRounds = 10;
 var approvedKeys = []
 
@@ -99,7 +99,7 @@ io.on("connection", socket => {
                 }
                 approvedKeys.push(newObject)
                 socket.emit("passwordCorrect", username, key)
-                found=true
+                found = true
             }
         }
         if (!found) {
@@ -126,7 +126,7 @@ io.on("connection", socket => {
                     "username": email,
                     "password": password,
                     "name": username,
-                    "adresses":[]
+                    "adresses": []
                 }
                 json.push(newObject)
                 jsonWrite(json, "data/users.json")
@@ -139,8 +139,7 @@ io.on("connection", socket => {
         var allowed = check(username, key)
         if (!allowed) {
             socket.emit("notAllowed")
-        }
-        else{
+        } else {
             socket.emit("allowed")
         }
     })
@@ -159,15 +158,18 @@ io.on("connection", socket => {
                             "owner": user.name,
                             "id": genInfo.nextAdressID,
                             "info": [],
-                            "userAccess":[{"username":username, "isOwner":true}]
+                            "userAccess": [{
+                                "username": username,
+                                "isOwner": true
+                            }]
                         }
                         var found = false
                         adresses.forEach(JSONadress => {
-                            if(JSONadress.adress == adress){
+                            if (JSONadress.adress == adress) {
                                 found = true
                             }
                         })
-                        if(!found){
+                        if (!found) {
                             genInfo.nextAdressID++
                             jsonWrite(genInfo, "data/genInfo.json")
                             adresses.push(newObject)
@@ -175,15 +177,14 @@ io.on("connection", socket => {
                             user.adresses.push(newObject.id)
                             jsonWrite(users, "data/users.json")
                             socket.emit("adressCreated")
-                        }
-                        else{
+                        } else {
                             socket.emit("adressExists")
                         }
                     }
                 })
             }
         })
-        if(!completed){
+        if (!completed) {
             socket.emit("err", "500 internal server error. could not find logged in user")
         }
     })
@@ -191,29 +192,28 @@ io.on("connection", socket => {
         var exitsts = false
         var allowed = false
         var userCheck = check(username, key)
-        if(userCheck){
+        if (userCheck) {
             var adresses = jsonRead("data/adresses.json")
             adresses.forEach(adress => {
-                if(adress.id == adressID){
+                if (adress.id == adressID) {
                     exitsts = true
                     adress.userAccess.forEach(user => {
-                        if(user.username == username){
+                        if (user.username == username) {
                             allowed = true
                             socket.emit("adress", adress, user.isOwner)
                         }
                     })
                 }
             })
-            if(!exitsts){
+            if (!exitsts) {
                 socket.emit("err", "denne adressen finnes ikke")
                 socket.emit("redir", "/")
             }
-            if(exitsts && !allowed){
+            if (exitsts && !allowed) {
                 socket.emit("err", "Du har ikke tilgang til denne adressen. Be eieren gi deg tilgang først")
                 socket.emit("redir", "/")
             }
-        }
-        else{
+        } else {
             socket.emit("redir", `login.html?redirect=info.html?id=${adressID}`)
         }
     })
@@ -223,40 +223,60 @@ io.on("connection", socket => {
         var hasAccess
         var usernameFromDatabase = false
         var loggedIn = check(username, key)
-        if(loggedIn){
+        if (loggedIn) {
             var adresses = jsonRead("data/adresses.json")
             adresses.forEach(adress => {
-                if(adress.id == adressID){
+                if (adress.id == adressID) {
                     adressFound = true
                     adress.userAccess.forEach(access => {
-                        if(access.username == username && access.isOwner){
+                        if (access.username == username && access.isOwner) {
                             var users = jsonRead("data/users.json")
                             users.forEach(user => {
-                                if(user.username.toLowerCase() == usernameToAdd.toLowerCase()){
+                                if (user.username.toLowerCase() == usernameToAdd.toLowerCase()) {
                                     usernameFromDatabase = user.username
                                 }
                             })
-                            if(!usernameFromDatabase){
+                            if (!usernameFromDatabase) {
                                 socket.emit("err", "fant ikke en bruker ved dette brukernavnet")
                                 return false;
+                            } else {
+                                completed = true
+                                var newObject = {
+                                    "username": usernameFromDatabase,
+                                    "isOwner": false
+                                }
+                                adress.userAccess.push(newObject)
+                                jsonWrite(adresses, "data/adresses.json")
+                                if (time) {
+                                    var date = new Date()
+                                    var hours = 0;
+                                    while(+time[1]>60){
+                                        hours++
+                                        +time[1]-60
+                                    }
+                                    var j = schedule.scheduleJob({hour: date.getHours() + hours, minute: date.getMinutes() + +time[1]}, function () {
+                                        var adresses = jsonRead("data/adresses.json")
+                                        adresses.forEach(adress => {
+                                            if (adress.id == adressID) {
+                                                for (var i = 0; i < adress.userAccess.length; i++) {
+                                                    if (adress.userAccess[i].username == usernameFromDatabase) {
+                                                        adress.userAccess.splice(i, 1)
+                                                        jsonWrite(adresses, "data/adresses.json")
+                                                    }
+                                                }
+                                            }
+                                        })
+                                    })
+                                }
                             }
-                            else{
-                            completed = true
-                            var newObject = {
-                               "username":usernameFromDatabase,
-                                "isOwner":false
-                            }
-                            adress.userAccess.push(newObject)
-                            jsonWrite(adresses, "data/adresses.json")
-                        }
                         }
                     })
                 }
             })
-            if(!completed){
+            if (!completed) {
                 socket.emit("err", "Du har ikke tilgang til å gjøre dette")
             }
-        }else{
+        } else {
             socket.emit("redir", `login.html?redir=info.html?id=${adressID}`)
         }
     })
@@ -278,35 +298,35 @@ async function hash(password) {
         return false
     }
 }
-function check(username, key){
+
+function check(username, key) {
     var json = jsonRead("data/users.json")
-        for (var i = 0; i < approvedKeys.length; i++) {
-            if (approvedKeys[i].username == username && approvedKeys[i].key == key) {
-                return true
-            }
+    for (var i = 0; i < approvedKeys.length; i++) {
+        if (approvedKeys[i].username == username && approvedKeys[i].key == key) {
+            return true
         }
-        return false;
+    }
+    return false;
 }
 //generates data files if non existant
-(function(){
-    if(!fs.existsSync("data/")){
+(function () {
+    if (!fs.existsSync("data/")) {
         fs.mkdirSync("data/")
         fs.writeFileSync("data/adresses.json", "[]")
         fs.writeFileSync("data/files.json", "[]")
         fs.writeFileSync("data/genInfo.json", '{"nextFileID":0,"nextAdressID":0}')
         fs.writeFileSync("data/users.json", "[]")
-    }
-    else{
-        if(!fs.existsSync("data/adresses.json")){
+    } else {
+        if (!fs.existsSync("data/adresses.json")) {
             fs.writeFileSync("data/adresses.json", "[]")
         }
-        if(!fs.existsSync("data/files.json")){
+        if (!fs.existsSync("data/files.json")) {
             fs.writeFileSync("data/files.json", "[]")
         }
-        if(!fs.existsSync("data/genInfo.json")){
+        if (!fs.existsSync("data/genInfo.json")) {
             fs.writeFileSync("data/genInfo.json", '{"nextFileID":0,"nextAdressID":0}')
         }
-        if(!fs.existsSync("data/users.json")){
+        if (!fs.existsSync("data/users.json")) {
             fs.writeFileSync("data/users.json", "[]")
         }
     }
