@@ -1,3 +1,7 @@
+:root{
+    --remove-user-cont-width:365px;
+    --remove-user-cont-length:300px;
+}
 #uploadForm{
     position: absolute;
     text-align: center;
@@ -44,7 +48,7 @@ body{
 .newMemberForm{
     position: absolute;
     left:30px;
-    top:50%;
+    top:30%;
     margin-top: -43.5px;
 }
 .newMemberForm input[type=text]{
@@ -72,4 +76,36 @@ body{
 }
 .newMemberForm select{
     text-align: center;
+}
+#removeUserCont{
+    position: absolute;
+    max-width: var(--remove-user-cont-width);
+    max-height: var(--remove-user-cont-length);
+    min-width: var(--remove-user-cont-width);
+    min-height: var(--remove-user-cont-length);
+    border: 1px solid black;
+    left:30px;
+    top:40%;
+    float:left;
+}
+.pHolder{
+    position: absolute;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width:292px;
+}
+@media all and (max-width: 1148px) {
+    .downlodable{
+        margin-left: 0px;
+        left: 700px;
+    }
+}
+.userDelPNG{
+    width:10%;
+    margin-left:300px;
+}
+
+.userDelPNG:hover{
+    cursor: pointer;
 }

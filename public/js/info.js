@@ -56,6 +56,24 @@ socket.on("adress", (adress, isOwner) => {
                 }
                 downloadsDiv.appendChild(p)
             })
+            var id = 0;
+            adress.userAccess.forEach(accessElem => {
+                var removeUserCont = document.createElement("div")
+                removeUserCont.id = id
+                id++
+                var p = document.createElement("p")
+                p.classList.add("pHolder")
+                p.innerHTML = accessElem.username
+                removeUserCont.appendChild(p)
+                var img = document.createElement("img")
+                img.src = "media/close.png"
+                img.classList.add("userDelPNG")
+                removeUserCont.appendChild(img)
+                document.getElementById("removeUserCont").appendChild(removeUserCont)
+                removeUserCont.onclick = function(){
+                    removeUser(accessElem.username, adress.adress, id)
+                }
+            })    
     })
 document.getElementById("fileupload").addEventListener("change", e => {
     var htmlString = ""
@@ -89,3 +107,36 @@ function timelimit(checked){
     document.getElementById("timeCont").hidden =! checked
     document.getElementById("timeInput").required = checked
 }
+function removeUser(usernameToDel, adress, htmlElemID){
+    
+    var Loggedinusername;
+    var key;
+    if(localStorage.getItem("username") && localStorage.getItem("key")){
+        Loggedinusername = localStorage.getItem("username")
+        key = localStorage.getItem("key")
+    }
+    else if(sessionStorage.getItem("username") && sessionStorage.getItem("key")){
+        Loggedinusername = sessionStorage.getItem("username")
+        key = sessionStorage.getItem("key")
+    }
+    else{
+        window.location.href=`login.html?redirect=info.html?id=${ID}`
+        return false;
+    }
+    if(usernameToDel == Loggedinusername){
+        if(confirm("Er du sikker på at du vil fjerne din egen tilgang til denne adressen?")){   
+            socket.emit("removeUser", Loggedinusername, key, usernameToDel, adress, htmlElemID)
+        }
+    }
+    else{
+        socket.emit("removeUser", Loggedinusername, key, usernameToDel, adress, htmlElemID)
+    }
+}
+socket.on("userRemoved", () => {
+    console.log("userRemoved")
+    window.location.reload()
+})
+socket.on("userAdded", () => {
+    alert("bruker lagt til")
+    window.location.reload()
+})

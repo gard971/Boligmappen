@@ -7,6 +7,7 @@ const io = require("socket.io")(http)
 const formidable = require("formidable")
 const bcrypt = require("bcrypt")
 const schedule = require("node-schedule")
+const { access } = require("fs/promises")
 var saltRounds = 10;
 var approvedKeys = []
 
@@ -247,6 +248,7 @@ io.on("connection", socket => {
                                 }
                                 adress.userAccess.push(newObject)
                                 jsonWrite(adresses, "data/adresses.json")
+                                socket.emit("userAdded")
                                 if (time) {
                                     var date = new Date()
                                     var hours = 0;
@@ -278,6 +280,39 @@ io.on("connection", socket => {
             }
         } else {
             socket.emit("redir", `login.html?redir=info.html?id=${adressID}`)
+        }
+    })
+    socket.on("removeUser", (Loggedinusername, key, usernameToDel, adress, htmlElemID) => {
+        var loggedIn = false;
+        var adressFound = false;
+        var usernameFound = false
+        approvedKeys.forEach(approvedKey => {
+            if(approvedKey.username == Loggedinusername && approvedKey.key == key){
+                loggedIn = true
+                var adresses = jsonRead("data/adresses.json")
+                adresses.forEach(adressFromDatabase => {
+                    if(adressFromDatabase.adress == adress){
+                        adressFound = true;
+                        adressFromDatabase.userAccess.forEach(accessElem => {
+                            if(accessElem.username == usernameToDel){
+                                usernameFound = true;
+                                adressFromDatabase.userAccess.splice(adressFromDatabase.userAccess.indexOf(accessElem), 1)
+                                socket.emit("userRemoved")
+                                jsonWrite(adresses, "data/adresses.json")
+                            }
+                        })
+                    }
+                })
+            }
+        })
+        if(!loggedIn){
+            socket.emit("redir", "login.html")
+        }
+        else if(!adressFound){
+            socket.emit("err", "500: internal server error. Fant ikke adressen")
+        }
+        else if(!usernameFound){
+            socket.emit("err","500 internal server error. Fant ikke brukernavn i listen")
         }
     })
 })
