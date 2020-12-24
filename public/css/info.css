@@ -87,6 +87,7 @@ body{
     left:30px;
     top:40%;
     float:left;
+    overflow-y:auto;
 }
 .pHolder{
     position: absolute;
@@ -108,4 +109,9 @@ body{
 
 .userDelPNG:hover{
     cursor: pointer;
+}
+#removeUserTitle{
+    position: absolute;
+    left:120px;
+    top:37%;
 }
