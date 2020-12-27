@@ -24,8 +24,12 @@ function windowHandle(ElementID, visible){
     document.getElementById(ElementID).hidden = !visible
 }
 socket.on("adress", (adress, isOwner) => {
+    console.log(isOwner)
+    ID = adress.id
             if(!isOwner){
                 document.getElementById("newMemberForm").hidden = true
+                document.getElementById("removeUserCont").hidden = true
+                document.getElementById("removeUserTitle").hidden = true
             }
             document.getElementById("uploadForm").action = `/upload?id=${adress.id}`
             console.log(document.getElementById("uploadForm").action)
@@ -65,14 +69,21 @@ socket.on("adress", (adress, isOwner) => {
                 p.classList.add("pHolder")
                 p.innerHTML = accessElem.username
                 removeUserCont.appendChild(p)
+                var img2 = document.createElement("img")
+                img2.classList.add("adminLogo")
+                img2.src ="media/adminLogo.png"
+                img2.onclick = function(){
+                    adminHandle(accessElem.username, adress.id)
+                }
+                removeUserCont.appendChild(img2)
                 var img = document.createElement("img")
                 img.src = "media/close.png"
                 img.classList.add("userDelPNG")
-                removeUserCont.appendChild(img)
-                document.getElementById("removeUserCont").appendChild(removeUserCont)
-                removeUserCont.onclick = function(){
+                img.onclick = function(){
                     removeUser(accessElem.username, adress.adress, id)
                 }
+                removeUserCont.appendChild(img)
+                document.getElementById("removeUserCont").appendChild(removeUserCont)
             })    
     })
 document.getElementById("fileupload").addEventListener("change", e => {
@@ -132,6 +143,25 @@ function removeUser(usernameToDel, adress, htmlElemID){
         socket.emit("removeUser", Loggedinusername, key, usernameToDel, adress, htmlElemID)
     }
 }
+function adminHandle(user, adress){
+    var getInfo = getUsernameAndKey()
+    if(getInfo != false){
+        var username = getInfo[0]
+        var key = getInfo[1]
+        if(user == username){
+            if(confirm("Er du sikker på at du vil fjerne deg selv som administrator fra denne adressen? Du vil ikke lenger kunne legge til og fjerne medlemer")){
+                socket.emit("updateAdmin", username, key, user, adress)
+            }
+
+        }
+        else{
+            socket.emit("updateAdmin", username, key, user, adress)
+        }
+    }
+    else{
+        window.location.href="login.html"
+    }
+}
 socket.on("userRemoved", () => {
     console.log("userRemoved")
     window.location.reload()
@@ -140,3 +170,16 @@ socket.on("userAdded", () => {
     alert("bruker lagt til")
     window.location.reload()
 })
+function getUsernameAndKey(){
+     if(sessionStorage.getItem("username") && sessionStorage.getItem("key")){
+         var array = [sessionStorage.getItem("username"), sessionStorage.getItem("key")]
+         return array
+     }
+     else if(localStorage.getItem("username") && localStorage.getItem("key")){
+         var array = [sessionStorage.getItem("key"), localStorage.getItem("key")]
+         return array
+     }
+     else{
+        return false
+     }
+}

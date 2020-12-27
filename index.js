@@ -7,7 +7,8 @@ const io = require("socket.io")(http)
 const formidable = require("formidable")
 const bcrypt = require("bcrypt")
 const schedule = require("node-schedule")
-const { access } = require("fs/promises")
+const { isFunction } = require("util")
+const { UV_FS_O_FILEMAP } = require("constants")
 var saltRounds = 10;
 var approvedKeys = []
 
@@ -286,6 +287,7 @@ io.on("connection", socket => {
         var loggedIn = false;
         var adressFound = false;
         var usernameFound = false
+        var hasAccess = false
         approvedKeys.forEach(approvedKey => {
             if(approvedKey.username == Loggedinusername && approvedKey.key == key){
                 loggedIn = true
@@ -294,11 +296,16 @@ io.on("connection", socket => {
                     if(adressFromDatabase.adress == adress){
                         adressFound = true;
                         adressFromDatabase.userAccess.forEach(accessElem => {
-                            if(accessElem.username == usernameToDel){
-                                usernameFound = true;
-                                adressFromDatabase.userAccess.splice(adressFromDatabase.userAccess.indexOf(accessElem), 1)
-                                socket.emit("userRemoved")
-                                jsonWrite(adresses, "data/adresses.json")
+                            if(accessElem.username == Loggedinusername && accessElem.isOwner){
+                                hasAccess = true
+                                adressFromDatabase.userAccess.forEach(accessElem2 =>{
+                                    if(accessElem2.username == usernameToDel){
+                                        usernameFound = true;
+                                        adressFromDatabase.userAccess.splice(adressFromDatabase.userAccess.indexOf(accessElem2), 1)
+                                        socket.emit("userRemoved")
+                                        jsonWrite(adresses, "data/adresses.json")
+                                    }
+                                })
                             }
                         })
                     }
@@ -309,10 +316,52 @@ io.on("connection", socket => {
             socket.emit("redir", "login.html")
         }
         else if(!adressFound){
-            socket.emit("err", "500: internal server error. Fant ikke adressen")
+            socket.emit("err", "Fant ikke adressen vennligst lukk nettleseren og prøv igjen")
+        }
+        else if(!hasAccess){
+            socket.emit("err", "Du har ikke tilgang til å gjøre dette!")
         }
         else if(!usernameFound){
-            socket.emit("err","500 internal server error. Fant ikke brukernavn i listen")
+            socket.emit("err","Fant ikke brukernavn i listen vennligst lukk nettleseren og prøv igjen")
+        }
+    })
+    socket.on("updateAdmin", (username, key, userToEdit, adressID) => {
+        var adressFound = false
+        var hasAccess = false
+        var completed = false
+        var loggedIn = check(username, key)
+        if(loggedIn){
+            var adresses = jsonRead("data/adresses.json")
+            adresses.forEach(adress => {
+                if(adress.id == adressID){
+                    adressFound = true
+                    adress.userAccess.forEach(accessElem => {
+                        if(accessElem.username == username && accessElem.isOwner){
+                            hasAccess = true
+                            adress.userAccess.forEach(accessElem2 => {
+                                if(accessElem2.username == userToEdit){
+                                    completed = true
+                                    accessElem2.isOwner = !accessElem2.isOwner
+                                    jsonWrite(adresses, "data/adresses.json")
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+        }
+        else{
+            socket.emit("redir", `login.html?redir=info.html?id=${adressID}`)
+            return
+        }
+        if(!adressFound){
+            socket.emit("err", "fant ikke adressen, vennligst lukk nettleseren og prøv igjen")
+        }
+        else if(!hasAccess){
+            socket.emit("err", "du har ikke tilgang til å gjøre dette")
+        }
+        else if(!completed){
+            socket.emit("err", "fant ikke brukeren du prøvde å endre, vennligst lukk nettleseren og prøv igjen")
         }
     })
 })
