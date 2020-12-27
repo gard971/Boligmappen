@@ -5,22 +5,24 @@
     <a id="a3" href="nyadresse.html">Registrer ny adresse </a>
 </ul>
 <form class="NewMemberForm" id="newMemberForm">
-<input type="text" placeholder="Legg til nye medlem!" id="memberToAdd" required><br>
+    <input type="text" placeholder="Legg til nye medlem!" id="memberToAdd" required><br>
     <label>Bruk Tidsbegrensning</label>
-     <input id="timelimitCheck" onclick="timelimit(this.checked)" type="checkbox"><br>
-     <container id="timeCont" hidden>
-     <input type="number" placeholder="Tid i minutter" id="timeInput"><br> 
+    <input id="timelimitCheck" onclick="timelimit(this.checked)" type="checkbox"><br>
+    <container id="timeCont" hidden>
+        <input type="number" placeholder="Tid i minutter" id="timeInput"><br>
     </container>
-     <input type="submit" value="Legg til!">
+    <input type="submit" value="Legg til!">
 </form>
 <label id="removeUserTitle">Brukere med tilgang:</label>
 <container id="removeUserCont">
 </container>
-<container id="infoContainer"></container>
-<button id="addButton" onclick="windowHandle('uploadForm', true); windowHandle('addButton', false)">+</button>
-<div id="downloadsContainer">
-    <h3>Nedlastbare Filer:</h3>
-</div>
+<container id="move">
+    <container id="infoContainer"></container>
+    <button id="addButton" onclick="windowHandle('uploadForm', true); windowHandle('addButton', false)">+</button>
+    <div id="downloadsContainer">
+        <h3>Nedlastbare Filer:</h3>
+    </div>
+</container>
 <link rel="stylesheet" href="css/info.css">
 <form id="uploadForm" method="POST" enctype="multipart/form-data" hidden>
     <img src="media/close.png" id="close" onclick="windowHandle('uploadForm', false); windowHandle('addButton', true)">

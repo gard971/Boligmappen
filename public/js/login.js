@@ -1,7 +1,6 @@
 var socket = io()
 document.getElementById("loginForm").addEventListener("submit", (e) => {
     e.preventDefault()
-    console.log(document.getElementById("username").value)
     socket.emit("login", document.getElementById("username").value, document.getElementById("password").value)
 })
 socket.on("passwordWrong", () => {

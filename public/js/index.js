@@ -4,7 +4,6 @@ function displayAdress(list){
     while(document.getElementById("ul").firstChild){
         document.getElementById("ul").removeChild(document.getElementById("ul").firstChild)
     }
-    console.log(list)
     var htmlString = list.map(object => {
         return `
             <div class="adressWrapper" onclick="redir('/info.html?id=${object.id}')">
@@ -32,7 +31,6 @@ socket.on("adresses", (list) => {
 document.getElementById("search").addEventListener("keyup", (e) => {
     var validAdresses = []
     adressList.forEach(adress => {
-        console.log(adress.adress)
         if(adress.adress.toLowerCase().includes(e.target.value.toLowerCase()) || adress.owner.toLowerCase().includes(e.target.value.toLowerCase())){
             validAdresses.push(adress)
         }

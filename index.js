@@ -1,6 +1,6 @@
 var app = require("express")()
 var express = require("express")
-const http = require("http").createServer(app).listen(3000)
+const http = require("http").createServer(app).listen(3000, () => {console.log("server listening on port 3000")})
 const fs = require("fs")
 const path = require("path")
 const io = require("socket.io")(http)
@@ -325,7 +325,7 @@ io.on("connection", socket => {
             socket.emit("err","Fant ikke brukernavn i listen vennligst lukk nettleseren og prøv igjen")
         }
     })
-    socket.on("updateAdmin", (username, key, userToEdit, adressID) => {
+    socket.on("updateAdmin", (username, key, userToEdit, adressID, htmlElemID) => {
         var adressFound = false
         var hasAccess = false
         var completed = false
@@ -343,6 +343,7 @@ io.on("connection", socket => {
                                     completed = true
                                     accessElem2.isOwner = !accessElem2.isOwner
                                     jsonWrite(adresses, "data/adresses.json")
+                                    socket.emit("adminChanged", htmlElemID)
                                 }
                             })
                         }

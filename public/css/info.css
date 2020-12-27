@@ -98,9 +98,10 @@ body{
     width:270px;
 }
 @media all and (max-width: 1148px) {
-    .downlodable{
+    #move{
+        position: relative;
         margin-left: 0px;
-        left: 700px;
+        left:100px;
     }
 }
 .userDelPNG{
